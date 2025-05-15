@@ -68,13 +68,13 @@ Bipedal-p2p-walk/
                     └── loong_env_p2p_s1.py
 ```
 
-**The robot asset file** is store as AzureLoong_shortFeet.usd in source/AzureLoong/AzureLoong/assets/Robots. 
+**The robot asset file** is store as AzureLoong_shortFeet.usd.
 
-**Joint configurations** such as stiffness and damping are configured in AzureLoong.py in source/AzureLoong/AzureLoong/assets. 
+**Joint configurations** such as stiffness and damping are configured in AzureLoong.py.
 
-**Reward functions, environment settings and corresponding scales** are defined in loong_env_p2p_s1.py and loong_cfg_p2p_s1.py in source/AzureLoong/AzureLoong/tasks/flat_walk. loong_cfg_p2p_s2.py is the second stage training config with more domain randomization. 
+**Reward functions, environment settings and corresponding scales** are defined in loong_env_p2p_s1.py and loong_cfg_p2p_s1.py . loong_cfg_p2p_s2.py is the second stage training config with more domain randomization. 
 
-**PPO parameters** are configured in rsl_rl_ppo_cfg.py of source/AzureLoong/AzureLoong/tasks/flat_walk/agents.
+**PPO parameters** are configured in rsl_rl_ppo_cfg.py.
 
 
 
