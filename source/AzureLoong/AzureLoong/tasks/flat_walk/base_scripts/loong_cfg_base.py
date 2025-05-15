@@ -94,9 +94,6 @@ from AzureLoong.assets.AzureLoong import AZURELOONG_CFG
 @configclass
 class LoongEnvBaseCfg(DirectRLEnvCfg):
     # env
-    # vel_frame_stack = 10  # stored frame num for vel reward evaluation
-    # contact_forces_frame_stack = 5  # stored frame num for contact forces reward evaluation
-    
     num_single_obs = 46 # defined in compute_observations(), command 5D, q 12D, dq 12D, actions 12D, base_ang_vel 3D, base_euler_xy 2D
     frame_stack = 15  # stored frame num for observations
     observation_space = int(frame_stack * num_single_obs)
@@ -124,20 +121,11 @@ class LoongEnvBaseCfg(DirectRLEnvCfg):
 
     # robot
     robot_cfg: ArticulationCfg = AZURELOONG_CFG.replace(prim_path="/World/envs/env_.*/Robot")
-    # contact_sensor_Left: ContactSensorCfg = ContactSensorCfg(
-    #     prim_path="/World/envs/env_.*/Robot/Link_ankle_l_roll", update_period=0.0, history_length=6, debug_vis=False
-    # )
-    # contact_sensor_Right: ContactSensorCfg = ContactSensorCfg(
-    #     prim_path="/World/envs/env_.*/Robot/Link_ankle_r_roll", update_period=0.0, history_length=6, debug_vis=False
-    # )
-    # contact_sensor_base: ContactSensorCfg = ContactSensorCfg(
-    #     prim_path="/World/envs/env_.*/Robot/base_link", update_period=0.0, history_length=6, debug_vis=False
-    # )
+
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*", update_period=0.0, history_length=3, debug_vis=False, track_air_time=True,
         # force_threshold = 5.0
     )
-
 
     imu_base: ImuCfg = ImuCfg(prim_path="/World/envs/env_.*/Robot/base_link", debug_vis=False)
     
@@ -208,22 +196,6 @@ class LoongEnvBaseCfg(DirectRLEnvCfg):
         r_hip_yaw_id = 12
         r_ankle_roll_id = 16
 
-        # # nominal height base to ankle 1.01
-        # default_joint_angles = {  # = target angles [rad] when action = 0.0, is defined in the asset cfg
-        #     'J_hip_l_roll': 0.0303,
-        #     'J_hip_l_yaw': 0.,
-        #     'J_hip_l_pitch': 0.3452,
-        #     'J_knee_l_pitch': -0.7817,
-        #     'J_ankle_l_pitch': 0.4365,
-        #     'J_ankle_l_roll': -0.0303,
-
-        #     'J_hip_r_roll': -0.0303,
-        #     'J_hip_r_yaw': 0.,
-        #     'J_hip_r_pitch': 0.3452,
-        #     'J_knee_r_pitch': -0.7817,
-        #     'J_ankle_r_pitch': 0.4365,
-        #     'J_ankle_r_roll': 0.0303
-        # }
 
     class commands:
         # Vers: lin_vel_x, lin_vel_y, ang_vel_yaw, heading (in heading mode ang_vel_yaw is recomputed from heading error)
@@ -261,47 +233,7 @@ class LoongEnvBaseCfg(DirectRLEnvCfg):
         enable_base_com_rand = False
 
         class scales:
-            # reference motion tracking
-            joint_pos = 0 # 1.6
-            feet_clearance = 0 # 0.6
-            feet_contact_number = 0
-            feet_swingZ = 0
-            feet_dswingZ = 0
-            virtual_leg_sym = 0
-            feet_orientation = 0 #2.
-            feet_orientation_v2 = 0
-            feet_stance_orientation = 0 
-            # gait
-            feet_air_time = 0 #1.
-            foot_slip = 0
-            feet_distance = 0
-            knee_distance = 0
-            # contact
-            feet_contact_forces = 0
-            # vel tracking
-            tracking_lin_vel = 0 #2 # use cmd histroy
-            tracking_ang_vel = 0 #2 # use cmd history
-            vel_mismatch_exp = 0  # lin_z; ang x,y
-            low_speed_vxy = 0
-            low_speed_wz = 0
-            track_vel_hard = 0 # 0.5 # no cmd history
-            track_vel_y_hard = 0.0 #1 
-            ang_vel = 0
-            # base pos
-            default_joint_pos = 0
-            orientation = 0
-            base_height = 0
-            base_height_stand = 0
-            base_acc = 0
-            # energy
-            action_smoothness = 0
-            torques_max = 0
-            torques = 0
-            dof_vel = 0
-            dof_ankle_vel_added = 0
-            dof_vel_swing = 0 #-5e-2
-            dof_acc = 0
-            collision = 0
+            pass
     
     class noise:
         add_noise = True

@@ -61,55 +61,9 @@ class EventCfg:
             "distribution": "uniform",
         },
     )
-    # # reset
-    # reset_base = EventTerm(
-    #     func=mdp.reset_root_state_uniform,
-    #     mode="reset",
-    #     params={
-    #         "asset_cfg": SceneEntityCfg("robot"),
-    #         "pose_range": {
-    #             "x": (-0.0, 0.0), 
-    #             "y": (-0.0, 0.0), 
-    #             "z": (0.03, 0.03), 
-    #             "roll": (-0.0, 0.0),
-    #             "pitch": (-0.0, 0.0),
-    #             "yaw": (-0.0, 0.0)},
-    #         "velocity_range": {
-    #             "x": (-0., 0.),
-    #             "y": (-0., 0.),
-    #             "z": (-0., 0.),
-    #             "roll": (-0., 0.),
-    #             "pitch": (-0., 0.),
-    #             "yaw": (-0., 0.),
-    #         },
-    #     },
-    # )
-    # reset_robot_joints = EventTerm(
-    #     func=mdp.reset_joints_by_offset,
-    #     mode="reset",
-    #     params={
-    #         "position_range": (-0.0, 0.0),
-    #         "velocity_range": (-0.0, 0.0),
-    #         "asset_cfg": SceneEntityCfg("robot"),
-    #     },
-    # )
-    # # interval
-    # push_robot = EventTerm(
-    #    func=mdp.push_by_setting_velocity,
-    #    mode="interval",
-    #    interval_range_s=(10.0, 15.0),
-    #    params={
-    #        "asset_cfg": SceneEntityCfg("robot"),
-    #        "velocity_range": {"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
-    #    },
-    # )
 
 @configclass
 class LoongEnvP2PS1Cfg(LoongEnvBaseCfg):
-    # env
-    # vel_frame_stack = 10  # stored frame num for vel reward evaluation
-    # contact_forces_frame_stack = 5  # stored frame num for contact forces reward evaluation
-    
     num_single_obs = 63 # defined in compute_observations(), command 10D, q 12D, dq 12D, actions 12D, base_ang_vel 3D, base_euler_xy 2D
     frame_stack = 15  # stored frame num for observations
     observation_space = int(frame_stack * num_single_obs)
@@ -248,46 +202,25 @@ class LoongEnvP2PS1Cfg(LoongEnvBaseCfg):
         max_contact_force = 900  # Forces above this value are penalized
 
         class scales:
-            # reference position trace tracking
-            #pos_trace = 0
             pos_trace_pXY = 4 #7
             pos_trace_pXY_vel = 6
-            pos_trace_pXY_TD = 0
             pos_trace_thetaZ = 5 #7
             pos_trace_thetaZ_vel = 5 #7
             pos_stop = 5 #5
-            pos_trace_pY_stand = 0
-            pos_start = 0 #500
-            pos_end = 0 #50
 
-            # gait
-            # feet_air_time = 50 #50 #need to redesign for stop mode!
-            # feet_air_time_nominal = 0 # 50
-            # feet_air_time_positive_biped = 0 # 5, need to redesign for stop mode!
-            # feet_air_time_positive_norminal = 0 # 4, # seems to have bugs, and need to redesign for stop mode!
-            # feet_air_time_spot = 0 # 5
-            # feet_air_time_hard_cst = 0 # 6
-            # air_time_variance_penalty = 0 #-2
-            # gait_consistency = 0 # 2
-            # async_func = 0 #2 # need to redesign for stop mode!
             feet_contact_number = 3 #2
             feet_swingZ = 6 #10
             feet_dswingZ = 3 #3
             feet_dswingXY = 1.5 #1.5
-            feet_swingZ_dz = 0 #2
             virtual_leg_sym = 55 #50
             virtual_leg_sym_continuous = 1.2 # 1.2
 
             feet_orientation = 2.5 #2.
-            # feet_clearance = 2 # 1, need to redesign for stop mode!
-            # feet_clearance_joint = 0 #2
             feet_slip = -0.1 #-0.1
-            feet_distance = 0. # 0.2
-            knee_distance = 0. # 0.2
             
             # contact
             feet_contact_forces = -0.005
-            # touch_down_velocity = -1.
+            touch_down_velocity = 0
 
             # base pos
             orientation = 3 #4.

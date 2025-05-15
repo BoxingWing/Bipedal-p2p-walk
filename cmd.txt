@@ -1,12 +1,6 @@
 python -m pip install -e source/AzureLoong
 
-python scripts/rsl_rl/train.py --task=loong_walk_s1 --headless
+python scripts/rsl_rl/train.py --task=loong_walk_p2p_s1 --headless
 
-python scripts/rsl_rl/play.py --task=loong_walk_s1 --num_envs 32
-
-python scripts/rsl_rl/sim2sim.py --task=loong_walk_s1
-
-tensorboard --logdir=/home/boxing/Documents/gitee_boxing/isaaclab_-azure-loong/logs/rsl_rl/loong_walk_s1
-
-./isaaclab.sh -p -m tensorboard.main --logdir /home/boxing/Documents/gitee_boxing/isaaclab_-azure-loong/logs/rsl_rl/loong_walk_s1
+python scripts/rsl_rl/play.py --task=loong_walk_p2p_s1 --num_envs 5
 

@@ -83,9 +83,6 @@ class LoongBaseEnv(DirectRLEnv):
         
         self.action_scale = self.cfg.action_scale
 
-        # self.joint_pos = self.robot.data.joint_pos
-        # self.joint_vel = self.robot.data.joint_vel
-
         self.dof_pos = self.robot.data.joint_pos
         self.dof_vel = self.robot.data.joint_vel
         self.contact_forces = self._contact_sensor.data.net_forces_w
@@ -136,23 +133,19 @@ class LoongBaseEnv(DirectRLEnv):
                 self.num_envs, self.cfg.single_num_privileged_obs, dtype=torch.float, device=self.device))
 
         material = self.robot.root_physx_view.get_material_properties().to(self.device)
-        # print(self.robot.root_physx_view)
-        # print(material.size())
+
         self.fritions = material[:, -1, 0] # only extract one of three body shapes' static friction, still dont know which body uses this friction
         self.feet_applied_forces = torch.zeros((self.num_envs,2,3), device=self.device)
         self.feet_applied_torques = torch.zeros((self.num_envs,2,3), device=self.device)
         self.base_apply_torque = torch.zeros((self.num_envs,1,3), device=self.device)
         self.base_apply_torque[:,0,:2] = torch_rand_float(-5, 5, (self.num_envs,2), device=self.device)
-        # print(self.fritions)
-        # print(self.robot.data.default_joint_stiffness)
+
         self.env_stiffness=torch.zeros((self.num_envs, self.robot.num_joints), device=self.device)
         self.env_damping=torch.zeros((self.num_envs, self.robot.num_joints), device=self.device)
         self.env_actuator_effort_limit=torch.zeros((self.num_envs, self.robot.num_joints), device=self.device)
         self.env_stiffness_ratio=torch.zeros((self.num_envs, self.robot.num_joints), device=self.device)
         self.env_damping_ratio=torch.zeros((self.num_envs, self.robot.num_joints), device=self.device)
         for actuator in self.robot.actuators.values():
-            # print(actuator.joint_names)
-            # print(actuator.joint_indices)
             self.env_stiffness[:, actuator.joint_indices] = actuator.stiffness[:]
             self.env_damping[:, actuator.joint_indices] = actuator.damping[:]
             self.env_actuator_effort_limit[:, actuator.joint_indices] = actuator.effort_limit[:]
@@ -192,16 +185,12 @@ class LoongBaseEnv(DirectRLEnv):
 
     def _setup_scene(self): # Will be called in super().__init__()
         self.robot = Articulation(self.cfg.robot_cfg)
-        # self._contact_sensor_l = ContactSensor(self.cfg.contact_sensor_Left)
-        # self._contact_sensor_r = ContactSensor(self.cfg.contact_sensor_Right)
         self._contact_sensor = ContactSensor(self.cfg.contact_sensor)
         self._imu_sensor_base = Imu(self.cfg.imu_base)
         self._height_scanner = RayCaster(self.cfg.height_scanner)
 
         # add articultion and sensors to scene
         self.scene.articulations["robot"] = self.robot
-        # self.scene.sensors["contact_sensor_left"] = self._contact_sensor_l
-        # self.scene.sensors["contact_sensor_right"] = self._contact_sensor_r
         self.scene.sensors["contact_sensor"] = self._contact_sensor
         self.scene.sensors["imu_base"] = self._imu_sensor_base
         self.scene.sensors["height_scanner"] = self._height_scanner
@@ -240,13 +229,11 @@ class LoongBaseEnv(DirectRLEnv):
         random_vel = math_utils.sample_uniform(
             ranges[:, 0],
             ranges[:, 1],
-            (len(env_ids), 6),  # 形状 (n_envs, 6)
+            (len(env_ids), 6),
             device=self.device
         )
 
-        # 批量赋值
         self.push_velocity_w[env_ids] = random_vel
-        # print("push_velocity_w: ", self.push_velocity_w)
         vel_w += self.push_velocity_w[env_ids,:]
 
         # set the velocities into the physics simulation
@@ -285,8 +272,6 @@ class LoongBaseEnv(DirectRLEnv):
         self.root_states = self.robot.data.root_state_w # w.r.t the world frame !
         self.rigid_state = self.robot.data.body_state_w
 
-        # self.base_quat = self.root_states[:, 3:7]
-        # self.base_euler_xyz = get_euler_xyz_tensor(self.base_quat)
         self.update_base_euler()
 
         self.feet_quat = self.rigid_state[:, self.feet_indices, 3:7]
@@ -297,10 +282,6 @@ class LoongBaseEnv(DirectRLEnv):
         self.base_lin_vel_w = self.robot.data.root_lin_vel_w
         self.base_ang_vel_w = self.robot.data.root_ang_vel_w
         self.projected_gravity = self.robot.data.projected_gravity_b
-        
-        # self.dof_pos = self.robot.data.joint_pos
-        # self.dof_vel = self.robot.data.joint_vel
-        # self.contact_forces = self._contact_sensor.data.net_forces_w
 
         # check termination
         reset_buf = torch.any(torch.norm(self.contact_forces[:, self.termination_contact_indices, :], dim=-1) > 1., dim=1)
@@ -314,10 +295,6 @@ class LoongBaseEnv(DirectRLEnv):
         return reset_buf, time_out_buf
     
     def _get_rewards(self) -> torch.Tensor:
-
-        # print("ssssssssssssssssssssssssssssssssss")
-        # print(self.root_states[0,:])
-        # print(self.robot.data.root_state_w[0,:])
         self._prepare_rewards_variables()
 
         rew_buf = torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
@@ -488,12 +465,6 @@ class LoongBaseEnv(DirectRLEnv):
         self.base_euler_xyz_multiLoop[env_ids,:] = base_euler_cur.clone()
         self.base_yaw_loopCount[env_ids] *= 0.0
 
-
-# @torch.jit.script
-# def torch_rand_float(lower, upper, shape, device):
-#     """ type: (float, float, Tuple[int, int], str) -> Tensor """
-#     return (upper - lower) * torch.rand(*shape, device=device) + lower
-
 @torch.jit.script
 def torch_rand_float(lower: float, upper: float, shape: Tuple[int, int], device: str):
     """ type: (float, float, Tuple[int, int], str) -> Tensor """
@@ -501,52 +472,28 @@ def torch_rand_float(lower: float, upper: float, shape: Tuple[int, int], device:
 
 @torch.jit.script
 def torch_rand_float_ranges(lower1: float, upper1: float, lower2: float, upper2: float, shape: Tuple[int, int], device: str):
-    # 检查每个区间是否有效
     range1_valid = upper1 > lower1
     range2_valid = upper2 > lower2
     
     if not (range1_valid or range2_valid):
         raise ValueError("At least one range must be valid (upper > lower)")
     
-    # 计算有效区间的长度
     range1_length = upper1 - lower1 if range1_valid else 0.0
     range2_length = upper2 - lower2 if range2_valid else 0.0
     
-    # 计算总长度
     total_length = range1_length + range2_length
     
-    # 生成 [0, total_length) 范围内的均匀分布随机数
     random_values = torch.rand(shape, device=device) * total_length
     
-    # 将随机数映射到有效区间
     if range1_valid and range2_valid:
-        # 两个区间都有效
         random_vector = torch.where(
             random_values < range1_length,
-            lower1 + random_values,  # 映射到 [a, b)
-            lower2 + (random_values - range1_length)  # 映射到 [c, d)
+            lower1 + random_values,
+            lower2 + (random_values - range1_length)
         )
     elif range1_valid:
-        # 只有第一个区间有效
         random_vector = lower1 + random_values
     else:
-        # 只有第二个区间有效
         random_vector = lower2 + random_values
     
     return random_vector
-
-# def get_euler_xyz_tensor(quat):
-#     r, p, w = euler_xyz_from_quat(quat)
-#     # stack r, p, w in dim1
-#     euler_xyz = torch.stack((r, p, w), dim=1)
-#     euler_xyz[euler_xyz > torch.pi] -= 2 * torch.pi
-#     return euler_xyz
-
-# def get_euler_xyz_tensor_multiLoop(quat, euler_old):
-#     r, p, w = euler_xyz_from_quat(quat)
-#     # stack r, p, w in dim1
-#     euler_xyz = torch.stack((r, p, w), dim=1)
-#     euler_xyz[euler_xyz > np.pi] -= 2 * np.pi
-#     ids = (euler_xyz[:,2] - euler_old[:,2]) < -6.0
-
-#     return euler_xyz
