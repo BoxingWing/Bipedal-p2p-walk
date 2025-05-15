@@ -7,7 +7,7 @@ class BipedPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 40  # 16 The number of steps per environment per update.
     max_iterations = 8000
     save_interval = 100
-    experiment_name = "loong_walk_p2p_s1"
+    experiment_name = "walk_p2p_s1"
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
@@ -37,7 +37,7 @@ class BipedPPORunnerCfgS2(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 40  # 16 The number of steps per environment per update.
     max_iterations = 8000
     save_interval = 200
-    experiment_name = "loong_walk_p2p_s2"
+    experiment_name = "walk_p2p_s2"
     resume = True
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(

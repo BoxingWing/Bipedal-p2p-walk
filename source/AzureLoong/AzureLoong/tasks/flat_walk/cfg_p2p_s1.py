@@ -15,7 +15,7 @@ from isaaclab.utils.noise import GaussianNoiseCfg, NoiseModelWithAdditiveBiasCfg
 
 from AzureLoong.assets.AzureLoong import AZURELOONG_CFG
 
-from .base_scripts.loong_cfg_base import LoongEnvBaseCfg
+from .base_scripts.cfg_base import BaseEnvCfg
 
 @configclass
 class EventCfg:
@@ -63,7 +63,7 @@ class EventCfg:
     )
 
 @configclass
-class LoongEnvP2PS1Cfg(LoongEnvBaseCfg):
+class EnvP2PS1Cfg(BaseEnvCfg):
     num_single_obs = 63 # defined in compute_observations(), command 10D, q 12D, dq 12D, actions 12D, base_ang_vel 3D, base_euler_xy 2D
     frame_stack = 15  # stored frame num for observations
     observation_space = int(frame_stack * num_single_obs)

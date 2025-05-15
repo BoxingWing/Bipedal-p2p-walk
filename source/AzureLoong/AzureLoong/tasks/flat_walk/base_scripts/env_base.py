@@ -10,7 +10,7 @@ from isaaclab.envs import DirectRLEnv
 from isaaclab.sensors import ContactSensor, RayCaster
 from isaaclab.sensors import Imu
 
-from .loong_cfg_base import LoongEnvBaseCfg
+from .cfg_base import BaseEnvCfg
 
 from isaaclab.utils.math import euler_xyz_from_quat, quat_rotate_inverse, quat_apply, wrap_to_pi, quat_from_euler_xyz
 from isaaclab.utils import CircularBuffer
@@ -23,10 +23,10 @@ from isaaclab.managers import EventTermCfg, ManagerTermBase, SceneEntityCfg
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv
 
-class LoongBaseEnv(DirectRLEnv):
-    cfg: LoongEnvBaseCfg
+class BaseEnv(DirectRLEnv):
+    cfg: BaseEnvCfg
 
-    def __init__(self, cfg: LoongEnvBaseCfg, render_mode: str | None = None, **kwargs):
+    def __init__(self, cfg: BaseEnvCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode, **kwargs)
 
         body_names = self.robot.data.body_names

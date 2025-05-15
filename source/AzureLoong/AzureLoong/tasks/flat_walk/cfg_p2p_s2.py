@@ -18,22 +18,11 @@ from isaaclab.sensors import ContactSensor, ContactSensorCfg, RayCasterCfg, patt
 
 from AzureLoong.assets.AzureLoong import AZURELOONG_CFG
 
-from .base_scripts.loong_cfg_base import LoongEnvBaseCfg
+from .base_scripts.cfg_base import BaseEnvCfg
 
 @configclass
 class EventCfg:
   # startup
-    # robot_physics_material = EventTerm(
-    #     func=mdp.randomize_rigid_body_material,
-    #     mode="startup",
-    #     params={
-    #         "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
-    #         "static_friction_range": (0.05, 3.0),
-    #         "dynamic_friction_range": (0.03, 2.0),
-    #         "restitution_range": (1.0, 1.0),
-    #         "num_buckets": 250,
-    #     },
-    # )
     robot_joint_stiffness_and_damping = EventTerm(
         func=mdp.randomize_actuator_gains,
         mode="startup",
@@ -73,38 +62,7 @@ class EventCfg:
             "distribution": "uniform",
         },
     )
-    # # reset
-    # reset_base = EventTerm(
-    #     func=mdp.reset_root_state_uniform,
-    #     mode="reset",
-    #     params={
-    #         "asset_cfg": SceneEntityCfg("robot"),
-    #         "pose_range": {
-    #             "x": (-0.0, 0.0), 
-    #             "y": (-0.0, 0.0), 
-    #             "z": (0.08, 0.1), 
-    #             "roll": (-0.0, 0.0),
-    #             "pitch": (-0.0, 0.0),
-    #             "yaw": (-0.0, 0.0)},
-    #         "velocity_range": {
-    #             "x": (-0., 0.),
-    #             "y": (-0., 0.),
-    #             "z": (-0., 0.),
-    #             "roll": (-0., 0.),
-    #             "pitch": (-0., 0.),
-    #             "yaw": (-0., 0.),
-    #         },
-    #     },
-    # )
-    # reset_robot_joints = EventTerm(
-    #     func=mdp.reset_joints_by_offset,
-    #     mode="reset",
-    #     params={
-    #         "position_range": (-0.0, 0.0),
-    #         "velocity_range": (-0.0, 0.0),
-    #         "asset_cfg": SceneEntityCfg("robot"),
-    #     },
-    # )
+
     # # interval
     push_robot = EventTerm(
        func=mdp.push_by_setting_velocity,
@@ -119,53 +77,22 @@ class EventCfg:
 ROUGH_TERRAINS_CFG_DIY = TerrainGeneratorCfg(
     size=(15.0, 15.0),
     border_width=20.0,
-    num_rows=10, # 10
-    num_cols=10, # 20
+    num_rows=10, 
+    num_cols=10, 
     horizontal_scale=0.1,
     vertical_scale=0.005,
     slope_threshold=0.75,
     use_cache=False,
     sub_terrains={
-        # "pyramid_stairs": terrain_gen.MeshPyramidStairsTerrainCfg(
-        #     proportion=0.2,
-        #     step_height_range=(0.05, 0.23),
-        #     step_width=0.3,
-        #     platform_width=3.0,
-        #     border_width=1.0,
-        #     holes=False,
-        # ),
-        # "pyramid_stairs_inv": terrain_gen.MeshInvertedPyramidStairsTerrainCfg(
-        #     proportion=0.2,
-        #     step_height_range=(0.05, 0.23),
-        #     step_width=0.3,
-        #     platform_width=3.0,
-        #     border_width=1.0,
-        #     holes=False,
-        # ),
-        # "boxes": terrain_gen.MeshRandomGridTerrainCfg(
-        #     proportion=0.2, grid_width=0.45, grid_height_range=(0.05, 0.2), platform_width=2.0
-        # ),
-        # "random_rough": terrain_gen.HfRandomUniformTerrainCfg(
-        #     proportion=1.0, noise_range=(0.02, 0.10), noise_step=0.02, border_width=0.25
-        # ),
         "wave_rough": terrain_gen.HfWaveTerrainCfg(
             proportion=1.0, amplitude_range=(0.005,0.03),num_waves=4, border_width=0.25
         ),
-        # "hf_pyramid_slope": terrain_gen.HfPyramidSlopedTerrainCfg(
-        #     proportion=0.1, slope_range=(0.0, 0.4), platform_width=2.0, border_width=0.25
-        # ),
-        # "hf_pyramid_slope_inv": terrain_gen.HfInvertedPyramidSlopedTerrainCfg(
-        #     proportion=0.1, slope_range=(0.0, 0.4), platform_width=2.0, border_width=0.25
-        # ),
     },
 )
 
 @configclass
-class LoongEnvP2PS2Cfg(LoongEnvBaseCfg):
+class EnvP2PS2Cfg(BaseEnvCfg):
     # env
-    # vel_frame_stack = 10  # stored frame num for vel reward evaluation
-    # contact_forces_frame_stack = 5  # stored frame num for contact forces reward evaluation
-    
     num_single_obs = 63 # defined in compute_observations(), command 10D, q 12D, dq 12D, actions 12D, base_ang_vel 3D, base_euler_xy 2D
     frame_stack = 15  # stored frame num for observations
     observation_space = int(frame_stack * num_single_obs)
@@ -296,7 +223,6 @@ class LoongEnvP2PS2Cfg(LoongEnvBaseCfg):
         base_height_target = 1.11
         min_dist = 0.3 # minimum distance between two feet
         max_dist = 1.0
-        # put some settings here for LLM parameter tuning
         target_joint_pos_scale = 0.17    # rad, scale for amplifying ref joint angle
         target_feet_height = 0.1        # m, desired feet height during swing phase
         # if true negative total rewards are clipped at zero (avoids early termination problems)
@@ -310,41 +236,21 @@ class LoongEnvP2PS2Cfg(LoongEnvBaseCfg):
 
         class scales:
             # reference position trace tracking
-            #pos_trace = 0
             pos_trace_pXY = 5 #7
             pos_trace_pXY_vel = 7
-            pos_trace_pXY_TD = 0
             pos_trace_thetaZ = 6 #7
             pos_trace_thetaZ_vel = 6 #7
             pos_stop = 5 #5
-            pos_start = 0 #500
-            pos_end = 0 #50
 
-            # gait
-            # feet_air_time = 50 #50 #need to redesign for stop mode!
-            # feet_air_time_nominal = 0 # 50
-            # feet_air_time_positive_biped = 0 # 5, need to redesign for stop mode!
-            # feet_air_time_positive_norminal = 0 # 4, # seems to have bugs, and need to redesign for stop mode!
-            # feet_air_time_spot = 0 # 5
-            # feet_air_time_hard_cst = 0 # 6
-            # air_time_variance_penalty = 0 #-2
-            # gait_consistency = 0 # 2
-            # async_func = 0 #2 # need to redesign for stop mode!
             feet_contact_number = 3 #2
             feet_swingZ = 6 #10
             feet_dswingZ = 3 #3
             feet_dswingXY = 1.5 #1.5
-            feet_swingZ_dz = 0 #2
             virtual_leg_sym = 55 #50
             virtual_leg_sym_continuous = 1.2 # 1.2
 
             feet_orientation = 2.5 #2.
-            # feet_orientation_swingSpeed = -1e-3
-            # feet_clearance = 2 # 1, need to redesign for stop mode!
-            # feet_clearance_joint = 0 #2
             feet_slip = -0.1 #-0.1
-            feet_distance = 0. # 0.2
-            knee_distance = 0. # 0.2
             
             # contact
             feet_contact_forces = -0.005

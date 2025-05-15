@@ -1,5 +1,5 @@
-from .base_scripts.loong_env_base import LoongBaseEnv, torch_rand_float, torch_rand_float_ranges
-from .base_scripts.loong_cfg_base import LoongEnvBaseCfg
+from .base_scripts.env_base import BaseEnv, torch_rand_float, torch_rand_float_ranges
+from .base_scripts.cfg_base import BaseEnvCfg
 import torch
 from isaaclab.utils.math import euler_xyz_from_quat, quat_rotate_inverse, quat_apply, wrap_to_pi, quat_rotate, quat_apply_yaw, quat_from_euler_xyz
 from isaaclab.utils.math import matrix_from_quat, euler_xyz_from_quat, quat_from_matrix, quat_inv, quat_mul, yaw_quat
@@ -28,10 +28,10 @@ class RealTimeDataSaver:
     def close(self):
         self.file.close()
 
-class LoongEnvP2PS1(LoongBaseEnv):
-    cfg: LoongEnvBaseCfg
+class EnvP2PS1(BaseEnv):
+    cfg: BaseEnvCfg
 
-    def __init__(self, cfg: LoongEnvBaseCfg, render_mode: str | None = None, **kwargs):
+    def __init__(self, cfg: BaseEnvCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode, **kwargs)
         self.last_feet_z = self.cfg.init_state.ankle_height
         self.feet_height = torch.zeros((self.num_envs, 2), device=self.device)
@@ -402,6 +402,7 @@ class LoongEnvP2PS1(LoongBaseEnv):
         
         env_ids = self.time_count >= 1.0
         env_ids = torch.logical_or(env_ids, env_ids_extra)
+        env_ids_extra =  env_ids_extra.int()
 
         if isIni:
             vx_rand = torch_rand_float_ranges(self.command_ranges["lin_vel_x"][0], self.command_ranges["lin_vel_x"][1], 

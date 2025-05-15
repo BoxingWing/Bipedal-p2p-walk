@@ -107,14 +107,7 @@ def main():
     while simulation_app.is_running():
         # run everything in inference mode
         with torch.inference_mode():
-            # agent stepping
-            # obs[:,:2]= 0 # no use
             actions = policy(obs)
-            # env stepping
-            # env.commands[:,0]=0.3
-            # env.commands[:,1]=0.
-            # env.commands[:,2]=0.
-            # env.commands[:,3]=0.
             obs, _, _, _ = env.step(actions)
         if args_cli.video:
             timestep += 1

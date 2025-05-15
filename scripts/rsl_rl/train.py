@@ -127,12 +127,13 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # runner.add_git_repo_to_log(__file__)
     # save resume path before creating a new log_dir
 
-    # save source file into log-directory
-    current_file_dir = Path(__file__).resolve().parent
-    project_root = current_file_dir.parents[1]  # 往上两级，到 isaaclab_-azure-loong/
-    flat_walk_path = project_root / "source" / "AzureLoong" / "AzureLoong" / "tasks" / "flat_walk"
-    target_dir = Path(log_dir) / flat_walk_path.name
-    shutil.copytree(flat_walk_path, target_dir, dirs_exist_ok=True)
+    # # save source file into log-directory
+    # current_file_dir = Path(__file__).resolve().parent
+    # project_root = current_file_dir.parents[1]
+    # flat_walk_path = project_root / "source" / "AzureLoong" / "AzureLoong" / "tasks" / "flat_walk"
+    # target_dir = Path(log_dir) / flat_walk_path.name
+    # shutil.copytree(flat_walk_path, target_dir, dirs_exist_ok=True)
+    
     if agent_cfg.resume:
         # get path to previous checkpoint
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
