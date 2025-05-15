@@ -28,8 +28,8 @@ python -m pip install -e source/AzureLoong
 Training and play an agent with RSL-RL on a bipedal robot AzureLoong:
 
 ```
-python scripts/rsl_rl/train.py --task=loong_walk_p2p_s1 --headless
-python scripts/rsl_rl/play.py --task=loong_walk_p2p_s1 --num_envs 5
+python scripts/rsl_rl/train.py --task=walk_p2p_s1 --headless
+python scripts/rsl_rl/play.py --task=walk_p2p_s1 --num_envs 5
 ```
 
 
