@@ -72,7 +72,7 @@ Bipedal-p2p-walk/
 
 **Joint configurations** such as stiffness and damping are configured in AzureLoong.py.
 
-**Reward functions, environment settings and corresponding scales** are defined in loong_env_p2p_s1.py and loong_cfg_p2p_s1.py . loong_cfg_p2p_s2.py is the second stage training config with more domain randomization. 
+**Environment settings, reward functions and corresponding scales** are defined in loong_env_p2p_s1.py and loong_cfg_p2p_s1.py. loong_cfg_p2p_s2.py is the second stage training config with more domain randomization. 
 
 **PPO parameters** are configured in rsl_rl_ppo_cfg.py.
 
