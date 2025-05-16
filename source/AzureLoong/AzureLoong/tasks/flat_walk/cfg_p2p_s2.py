@@ -97,7 +97,7 @@ class EnvP2PS2Cfg(BaseEnvCfg):
     frame_stack = 15  # stored frame num for observations
     observation_space = int(frame_stack * num_single_obs)
 
-    single_num_privileged_obs = 109 # defined in compute_observations()
+    single_num_privileged_obs = 108 # defined in compute_observations()
     c_frame_stack = 5 # stored frame num for privileged (or critic) observations
     state_space = int(c_frame_stack * single_num_privileged_obs)
 
