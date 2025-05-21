@@ -171,7 +171,8 @@ class BaseEnv(DirectRLEnv):
 
         # Randomize the com in range -max displacement to max displacement
         coms += torch.rand_like(coms) * 2 * self.cfg.domain_rand.com_rand_range -  self.cfg.domain_rand.com_rand_range
-
+        self.com_offset = coms.clone().to(self.device)
+        
         # Set the new coms
         if self.cfg.domain_rand.enable_base_com_rand:
             new_coms = self.scene["robot"].root_physx_view.get_coms().clone()
@@ -255,7 +256,7 @@ class BaseEnv(DirectRLEnv):
         self.processed_actions_used = (1-k)*self.processed_actions + k*self.processed_actions_used
         self.robot.set_joint_position_target(self.processed_actions_used)
         
-        self.robot.set_joint_position_target(self.processed_actions)
+        # self.robot.set_joint_position_target(self.processed_actions)
 
         self.feet_applied_forces[:,0,:3] = torch_rand_float(-1.5, 1.5, (self.num_envs,3), device=self.device)
         self.feet_applied_forces[:,1,:3] = torch_rand_float(-1.5, 1.5, (self.num_envs,3), device=self.device)

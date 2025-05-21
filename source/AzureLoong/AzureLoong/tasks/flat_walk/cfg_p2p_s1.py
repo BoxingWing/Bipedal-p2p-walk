@@ -68,7 +68,7 @@ class EnvP2PS1Cfg(BaseEnvCfg):
     frame_stack = 15  # stored frame num for observations
     observation_space = int(frame_stack * num_single_obs)
 
-    single_num_privileged_obs = 108 # defined in compute_observations()
+    single_num_privileged_obs = 123 # defined in compute_observations()
     c_frame_stack = 5 # stored frame num for privileged (or critic) observations
     state_space = int(c_frame_stack * single_num_privileged_obs)
 
@@ -209,7 +209,7 @@ class EnvP2PS1Cfg(BaseEnvCfg):
             pos_stop = 5 #5
 
             feet_contact_number = 3 #2
-            feet_swingZ = 6 #10
+            feet_swingZ = 10 #10
             feet_dswingZ = 3 #3
             feet_dswingXY = 1.5 #1.5
             virtual_leg_sym = 55 #50
@@ -233,7 +233,7 @@ class EnvP2PS1Cfg(BaseEnvCfg):
             # energy
             action_smoothness = -0.2
             action_smoothness_minimum = -0.02
-            action_smoothness_minimum_filter = 4 #4
+            action_smoothness_minimum_filter = -4 #4
             torques_max = -1.5e-1
             torques = -5e-7
             dof_vel = -5e-4 

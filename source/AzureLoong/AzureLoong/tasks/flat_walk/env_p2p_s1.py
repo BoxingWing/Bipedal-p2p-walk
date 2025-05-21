@@ -353,6 +353,7 @@ class EnvP2PS1(BaseEnv):
                 q,  # 12 
                 dq,  # 12
                 self.actions[:],  # 12
+                (self.processed_actions_used - self.robot.data.default_joint_pos) / self.cfg.action_scale - self.actions, # 12
                 (self.base_pos_des[:,:2] - self.base_pos_cur[:,:2]) * self.obs_scales.pos_xy, # 2
                 (self.base_lin_vel_des_w[:,:2] - self.base_lin_vel_w[:, :2]) * self.obs_scales.lin_vel, #2
                 self.start_base_cmd[:,2].unsqueeze(1) * self.obs_scales.pos_theta, #1
@@ -370,7 +371,8 @@ class EnvP2PS1(BaseEnv):
                 feet_r_pos_b * self.obs_scales.feet_pos, # 3
                 eul_b2f_l * self.obs_scales.feet_eul, #3
                 eul_b2f_r * self.obs_scales.feet_eul,  #3
-                self.static_friction[:,0, 0].unsqueeze(1) # 1, friction
+                self.static_friction[:,0, 0].unsqueeze(1), # 1, friction
+                self.com_offset
             ),
             dim=-1,
         )
@@ -716,7 +718,7 @@ class EnvP2PS1(BaseEnv):
         err_square =  torch.square(ref_feZ - feet_z)
 
         rew_pos = torch.exp(-err_abs * 80.) - 20. * err_square
-        rew_pos = torch.sum(rew_pos, dim=1)
+        rew_pos = torch.sum(rew_pos * swing_mask, dim=1)
 
         return rew_pos
 
@@ -949,7 +951,8 @@ class EnvP2PS1(BaseEnv):
         Encourages smoothness in the robot's actions by penalizing large differences between consecutive actions.
         This is important for achieving fluid motion and reducing mechanical stress.
         """
-        term_4 = torch.exp(-torch.sum(torch.abs(self.processed_actions - self.processed_actions_used), dim=1))
+        # term_4 = torch.exp(-torch.sum(torch.abs(self.processed_actions - self.processed_actions_used), dim=1))
+        term_4 = 10. * torch.sum(torch.square((self.processed_actions - self.processed_actions_used)), dim=1)
         return term_4
 
     def _reward_torques(self):
